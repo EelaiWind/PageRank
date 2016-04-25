@@ -39,14 +39,11 @@ public class PageRankMapper extends Mapper<LongWritable, Text, IntWritable, Rank
 			adjacentNodes.add(Integer.parseInt(tokens[i]));
 		}
 		writeAdjacencyList(context, nodeId, adjacentNodes);
-		for ( int i = 0 ; i < totalNodeCount; i++){
-			System.out.print(String.format("MYLOG : (%d->%d) ",nodeId, i));
-			if ( adjacentNodes.contains(i) ){
-				distributeRankToAdjacentNodes(context,true, i, rank, adjacentNodes.size());
-			}
-			else{
-				distributeRankToAdjacentNodes(context,false, i, rank, adjacentNodes.size());
-			}
+
+		int sourceOutDegree = adjacentNodes.size();
+		for (int adjacentNodeId : adjacentNodes){
+			System.out.print(String.format("MYLOG: (%d, %d) = ",nodeId, adjacentNodeId));
+			distributeRankToAdjacentNodes(context, adjacentNodeId, rank, sourceOutDegree);
 		}
 	}
 
@@ -58,24 +55,13 @@ public class PageRankMapper extends Mapper<LongWritable, Text, IntWritable, Rank
 		context.write(outputKey, outputValue);
 	}
 
-	private void distributeRankToAdjacentNodes(Context context,boolean isAdjacent, int adjacentNodeId, double sourceRank, int sourceOutDegree) throws IOException, InterruptedException{
-		double rank = 0;
-		outputKey.set(adjacentNodeId);
-		if (sourceOutDegree > 0){
-			if ( isAdjacent){
-				rank = beta*(sourceRank/sourceOutDegree) + (1.0-beta)*(sourceRank/totalNodeCount);
-			}
-			else{
-				rank = (1.0-beta)*(sourceRank/totalNodeCount);
-			}
+	private void distributeRankToAdjacentNodes(Context context, int adjacentNodeId, double sourceRank, int sourceOutDegree) throws IOException, InterruptedException{
+		double rank = beta*(sourceRank/sourceOutDegree);
 
-		}
-		else{
-			rank = 1.0*sourceRank/totalNodeCount ;
-		}
-		System.out.println(rank);
+		outputKey.set(adjacentNodeId);
 		outputValue.setRank(rank);
 		outputValue.clearAdjacentNodes();
+		System.out.println(String.format("%f (rank=%f)",rank,sourceRank));
 		context.write(outputKey, outputValue);
 	}
 }

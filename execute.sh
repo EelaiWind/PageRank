@@ -9,6 +9,6 @@ INPUT=${HOME}/input/
 TMP_OUTPUT=${HOME}/tmp_output/
 
 #hadoop jar PageRank.jar PageRank.AdjacencyListJob $INPUT $OUTPUT 10877
-hadoop jar PageRank.jar PageRank.AdjacencyListJob $INPUT 10877
+hadoop jar PageRank.jar PageRank.AdjacencyListJob $INPUT 10877 
 hadoop fs -cat ${TMP_OUTPUT}/* > adjacencyList.log
 

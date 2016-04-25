@@ -7,11 +7,8 @@
 OUTPUT=pageRank/output/
 BETA=0.85
 TOTAL_NODE_COUNT=10877
+RANK_SUM=${TOTAL_NODE_COUNT}
 
-for (( i = 0 ; i < $1; i=i+1 ))
-do
-#hadoop jar PageRank.jar PageRank.PageRankJob $OUTPUT 0.8 10877 
-hadoop jar PageRank.jar PageRank.PageRankJob $OUTPUT $BETA $TOTAL_NODE_COUNT 
-done
+hadoop jar PageRank.jar PageRank.PageRankJob $OUTPUT $BETA $TOTAL_NODE_COUNT $RANK_SUM $1
 
 hadoop fs -cat ${OUTPUT}* > pageRank.log
